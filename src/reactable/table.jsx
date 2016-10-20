@@ -26,6 +26,8 @@ export class Table extends React.Component {
             let sortingColumn = props.sortBy || props.defaultSort;
             this.state.currentSort = this.getCurrentSort(sortingColumn);
         }
+
+        this.rowData = {}
     }
 
     filterBy(filter) {
@@ -127,14 +129,24 @@ export class Table extends React.Component {
 
     initialize(props) {
         this.data = props.data || [];
+
         let { data, tfoot } = this.parseChildData(props);
 
-        this.data = this.data.concat(data);
+        this.data = this.indexData( this.data.concat(data) )
         this.tfoot = tfoot;
 
         this.initializeSorts(props);
         this.initializeFilters(props);
     }
+
+    indexData (data) {
+        return data.map( (item, index) => { 
+            return Object.assign({}, item, {
+                cacheId: index + 1
+            })
+        })
+    }
+
 
     initializeFilters(props) {
         this._filterable = {};
@@ -393,6 +405,8 @@ export class Table extends React.Component {
         if (this.data && typeof this.data.map === 'function') {
             // Build up the columns array
             children = children.concat(this.data.map(function(rawData, i) {
+                let cacheId = rawData.cacheId
+
                 let data = rawData;
                 let props = {};
                 if (rawData.__reactableMeta === true) {
@@ -423,9 +437,17 @@ export class Table extends React.Component {
                     }
                 }
 
-                return (
-                    <Tr columns={columns} key={i} data={data} {...props} />
-                );
+                let existingRow = this.rowData[cacheId]
+                const dataUnsynced = (!existingRow || existingRow.data !== data)
+                if ( this.props.noCaching || dataUnsynced ) {
+                    existingRow = this.rowData[cacheId] = {
+                        row: <Tr columns={columns} key={cacheId} data={data} {...props} />,
+                        data
+                    }
+                }
+
+                return existingRow.row
+
             }.bind(this)));
         }
 
@@ -531,5 +553,6 @@ Table.defaultProps = {
     defaultSortDescending: false,
     itemsPerPage: 0,
     filterBy: '',
-    hideFilterInput: false
+    hideFilterInput: false,
+    noCaching: false
 };

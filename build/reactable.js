@@ -1044,6 +1044,8 @@ window.ReactDOM["default"] = window.ReactDOM;
                 var sortingColumn = props.sortBy || props.defaultSort;
                 this.state.currentSort = this.getCurrentSort(sortingColumn);
             }
+
+            this.rowData = {};
         }
 
         _createClass(Table, [{
@@ -1150,11 +1152,20 @@ window.ReactDOM["default"] = window.ReactDOM;
                 var data = _parseChildData.data;
                 var tfoot = _parseChildData.tfoot;
 
-                this.data = this.data.concat(data);
+                this.data = this.indexData(this.data.concat(data));
                 this.tfoot = tfoot;
 
                 this.initializeSorts(props);
                 this.initializeFilters(props);
+            }
+        }, {
+            key: 'indexData',
+            value: function indexData(data) {
+                return data.map(function (item, index) {
+                    return Object.assign({}, item, {
+                        cacheId: index + 1
+                    });
+                });
             }
         }, {
             key: 'initializeFilters',
@@ -1418,6 +1429,8 @@ window.ReactDOM["default"] = window.ReactDOM;
                 if (this.data && typeof this.data.map === 'function') {
                     // Build up the columns array
                     children = children.concat(this.data.map((function (rawData, i) {
+                        var cacheId = rawData.cacheId;
+
                         var data = rawData;
                         var props = {};
                         if (rawData.__reactableMeta === true) {
@@ -1448,7 +1461,16 @@ window.ReactDOM["default"] = window.ReactDOM;
                             }
                         }
 
-                        return _react['default'].createElement(_tr.Tr, _extends({ columns: columns, key: i, data: data }, props));
+                        var existingRow = this.rowData[cacheId];
+                        var dataUnsynced = !existingRow || existingRow.data !== data;
+                        if (this.props.noCaching || dataUnsynced) {
+                            existingRow = this.rowData[cacheId] = {
+                                row: _react['default'].createElement(_tr.Tr, _extends({ columns: columns, key: cacheId, data: data }, props)),
+                                data: data
+                            };
+                        }
+
+                        return existingRow.row;
                     }).bind(this)));
                 }
 
@@ -1559,7 +1581,8 @@ window.ReactDOM["default"] = window.ReactDOM;
         defaultSortDescending: false,
         itemsPerPage: 0,
         filterBy: '',
-        hideFilterInput: false
+        hideFilterInput: false,
+        noCaching: false
     };
 });
 

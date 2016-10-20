@@ -1,18 +1,18 @@
 {
-  "name": "reactable",
-  "version": "0.14.0",
-  "description": "Fast, flexible, simple data tables in React",
+  "name": "reactable-cacheable",
+  "version": "0.5.2",
+  "description": "A fork of Glittershark's reactable.js that allows caching of table data for faster sorting and filtering.",
   "main": "./lib/reactable.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/glittershark/reactable.git"
+    "url": "https://github.com/stbly/reactable.git"
   },
   "bugs": {
     "url": "https://github.com/glittershark/reactable/issues"
   },
-  "author": "Griffin Smith",
+  "author": "Conor Britain",
   "license": "MIT",
-  "homepage": "https://github.com/glittershark/reactable",
+  "homepage": "https://github.com/stbly/reactable",
   "scripts": {
     "test": "./node_modules/grunt-cli/bin/grunt ci",
     "build": "./node_modules/grunt-cli/bin/grunt build"

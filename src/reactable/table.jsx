@@ -440,8 +440,9 @@ export class Table extends React.Component {
                 let existingRow = this.rowData[cacheId]
                 const dataUnsynced = (!existingRow || existingRow.data !== data)
                 if ( this.props.noCaching || dataUnsynced ) {
+                    let rowProps = filterPropsFrom(props);
                     existingRow = this.rowData[cacheId] = {
-                        row: <Tr columns={columns} key={cacheId} data={data} {...props} />,
+                        row: <Tr columns={columns} key={cacheId} data={data} {...rowProps} />,
                         data
                     }
                 }
@@ -522,6 +523,7 @@ export class Table extends React.Component {
                        key="thead"/>
             )
         }
+
         return <table {...props}>
             {tableHeader}
             <tbody className="reactable-data" key="tbody">

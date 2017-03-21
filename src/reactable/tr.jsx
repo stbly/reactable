@@ -27,7 +27,7 @@ export class Tr extends React.Component {
                         props = value.props;
                         value = value.value;
                     }
-
+                    
                     return <Td column={column} key={column.key} {...props}>{value}</Td>;
                 } else {
                     return <Td column={column} key={column.key} />;

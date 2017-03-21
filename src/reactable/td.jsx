@@ -14,10 +14,14 @@ export class Td extends React.Component {
 
     render() {
         // Attach any properties on the column to this Td object to allow things like custom event handlers
+        
         var mergedProps = filterPropsFrom(this.props);
+
         if (typeof(this.props.column) === 'object') {
             for (var key in this.props.column) {
-                if (key !== 'key' && key !== 'name') {
+                // added props exception; sometimes a props property is getting
+                // appended to this.props when programatically creating cells;
+                if (key !== 'key' && key !== 'name' && key !== 'props') {
                     mergedProps[key] = this.props.column[key];
                 }
             }

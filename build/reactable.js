@@ -30,6 +30,7 @@ window.ReactDOM["default"] = window.ReactDOM;
         sort: true,
         sortBy: true,
         sortableColumns: true,
+        noCaching: true,
         onSort: true,
         defaultSort: true,
         defaultSortDescending: true,
@@ -455,10 +456,12 @@ window.ReactDOM["default"] = window.ReactDOM;
             key: 'render',
             value: function render() {
                 // Attach any properties on the column to this Td object to allow things like custom event handlers
+
                 var mergedProps = (0, _libFilter_props_from.filterPropsFrom)(this.props);
+
                 if (typeof this.props.column === 'object') {
                     for (var key in this.props.column) {
-                        if (key !== 'key' && key !== 'name') {
+                        if (key !== 'key' && key !== 'name' && key !== 'props') {
                             mergedProps[key] = this.props.column[key];
                         }
                     }
@@ -1464,8 +1467,9 @@ window.ReactDOM["default"] = window.ReactDOM;
                         var existingRow = this.rowData[cacheId];
                         var dataUnsynced = !existingRow || existingRow.data !== data;
                         if (this.props.noCaching || dataUnsynced) {
+                            var rowProps = (0, _libFilter_props_from.filterPropsFrom)(props);
                             existingRow = this.rowData[cacheId] = {
-                                row: _react['default'].createElement(_tr.Tr, _extends({ columns: columns, key: cacheId, data: data }, props)),
+                                row: _react['default'].createElement(_tr.Tr, _extends({ columns: columns, key: cacheId, data: data }, rowProps)),
                                 data: data
                             };
                         }
@@ -1543,6 +1547,7 @@ window.ReactDOM["default"] = window.ReactDOM;
                         onSort: this.onSort.bind(this),
                         key: 'thead' });
                 }
+
                 return _react['default'].createElement(
                     'table',
                     props,

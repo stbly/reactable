@@ -16,11 +16,13 @@ export class Td extends React.Component {
         // Attach any properties on the column to this Td object to allow things like custom event handlers
         
         var mergedProps = filterPropsFrom(this.props);
-
         if (typeof(this.props.column) === 'object') {
             for (var key in this.props.column) {
-                // added props exception; sometimes a props property is getting
-                // appended to this.props when programatically creating cells;
+                // added props exception; the getColumns method in the Thead component
+                // will add a props property to all of a table's columns, which will 
+                // then trigger a react warning if added as a prop to the td element as
+                // a property in mergedProps. Figured it better to make an exception
+                // here rather than comment out line 13 in Thead
                 if (key !== 'key' && key !== 'name' && key !== 'props') {
                     mergedProps[key] = this.props.column[key];
                 }

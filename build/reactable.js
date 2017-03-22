@@ -1308,31 +1308,39 @@ window.ReactDOM["default"] = window.ReactDOM;
         }, {
             key: 'applyFilter',
             value: function applyFilter(filter, children) {
+                var _this = this;
+
                 // Helper function to apply filter text to a list of table rows
-                filter = filter.toLowerCase();
+
+                var filterIsArray = Object.prototype.toString.call(filter) === '[object Array]';
+                var filters = filterIsArray ? filter : [filter];
+
                 var matchedChildren = [];
 
-                for (var i = 0; i < children.length; i++) {
-                    var data = children[i].props.data;
-
-                    for (var filterColumn in this._filterable) {
-                        if (typeof data[filterColumn] !== 'undefined') {
-                            // Default filter
-                            if (typeof this._filterable[filterColumn] === 'undefined' || this._filterable[filterColumn] === 'default') {
-                                if ((0, _libExtract_data_from.extractDataFrom)(data, filterColumn).toString().toLowerCase().indexOf(filter) > -1) {
-                                    matchedChildren.push(children[i]);
-                                    break;
-                                }
-                            } else {
-                                // Apply custom filter
-                                if (this._filterable[filterColumn]((0, _libExtract_data_from.extractDataFrom)(data, filterColumn).toString(), filter)) {
-                                    matchedChildren.push(children[i]);
-                                    break;
+                filters.forEach(function (currentFilter) {
+                    currentFilter = currentFilter.toLowerCase();
+                    for (var i = 0; i < children.length; i++) {
+                        var data = children[i].props.data;
+                        for (var filterColumn in _this._filterable) {
+                            if (typeof data[filterColumn] !== 'undefined') {
+                                // Default filter
+                                if (typeof _this._filterable[filterColumn] === 'undefined' || _this._filterable[filterColumn] === 'default') {
+                                    if ((0, _libExtract_data_from.extractDataFrom)(data, filterColumn).toString().toLowerCase().indexOf(currentFilter) > -1) {
+                                        matchedChildren.push(children[i]);
+                                        break;
+                                    }
+                                } else {
+                                    // Apply custom filter
+                                    console.log('filterColumn', filterColumn, 'filter', currentFilter);
+                                    if (_this._filterable[filterColumn]((0, _libExtract_data_from.extractDataFrom)(data, filterColumn).toString(), currentFilter)) {
+                                        matchedChildren.push(children[i]);
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                });
 
                 return matchedChildren;
             }
@@ -1404,7 +1412,7 @@ window.ReactDOM["default"] = window.ReactDOM;
         }, {
             key: 'render',
             value: function render() {
-                var _this = this;
+                var _this2 = this;
 
                 var children = [];
                 var columns = undefined;
@@ -1538,9 +1546,9 @@ window.ReactDOM["default"] = window.ReactDOM;
                     tableHeader = _react['default'].createElement(_thead.Thead, { columns: columns,
                         filtering: filtering,
                         onFilter: function (filter) {
-                            _this.setState({ filter: filter });
-                            if (_this.props.onFilter) {
-                                _this.props.onFilter(filter);
+                            _this2.setState({ filter: filter });
+                            if (_this2.props.onFilter) {
+                                _this2.props.onFilter(filter);
                             }
                         },
                         filterPlaceholder: this.props.filterPlaceholder,
@@ -1566,9 +1574,9 @@ window.ReactDOM["default"] = window.ReactDOM;
                         numPages: numPages,
                         currentPage: currentPage,
                         onPageChange: function (page) {
-                            _this.setState({ currentPage: page });
-                            if (_this.props.onPageChange) {
-                                _this.props.onPageChange(page);
+                            _this2.setState({ currentPage: page });
+                            if (_this2.props.onPageChange) {
+                                _this2.props.onPageChange(page);
                             }
                         },
                         previousPageLabel: this.props.previousPageLabel,

@@ -273,30 +273,36 @@ export class Table extends React.Component {
 
     applyFilter(filter, children) {
         // Helper function to apply filter text to a list of table rows
-        filter = filter.toLowerCase();
+        
+        const filterIsArray = Object.prototype.toString.call( filter ) === '[object Array]'
+        const filters = filterIsArray ? filter : [filter]
+
         let matchedChildren = [];
 
-        for (let i = 0; i < children.length; i++) {
-            let data = children[i].props.data;
-
-            for (let filterColumn in this._filterable) {
-                if (typeof(data[filterColumn]) !== 'undefined') {
-                    // Default filter
-                    if (typeof(this._filterable[filterColumn]) === 'undefined' || this._filterable[filterColumn]=== 'default') {
-                        if (extractDataFrom(data, filterColumn).toString().toLowerCase().indexOf(filter) > -1) {
-                            matchedChildren.push(children[i]);
-                            break;
-                        }
-                    } else {
-                        // Apply custom filter
-                        if (this._filterable[filterColumn](extractDataFrom(data, filterColumn).toString(), filter)) {
-                            matchedChildren.push(children[i]);
-                            break;
+        filters.forEach( currentFilter => {
+            currentFilter = currentFilter.toLowerCase();
+            for (let i = 0; i < children.length; i++) {
+                let data = children[i].props.data;
+                for (let filterColumn in this._filterable) {
+                    if (typeof(data[filterColumn]) !== 'undefined') {
+                        // Default filter
+                        if (typeof(this._filterable[filterColumn]) === 'undefined' || this._filterable[filterColumn]=== 'default') {
+                            if (extractDataFrom(data, filterColumn).toString().toLowerCase().indexOf(currentFilter) > -1) {
+                                matchedChildren.push(children[i]);
+                                break;
+                            }
+                        } else {
+                            // Apply custom filter
+                            if (this._filterable[filterColumn](extractDataFrom(data, filterColumn).toString(), currentFilter)) {
+                                matchedChildren.push(children[i]);
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
+        })
+        
 
         return matchedChildren;
     }

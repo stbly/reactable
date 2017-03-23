@@ -302,8 +302,17 @@ export class Table extends React.Component {
                 }
             }
         })
-        
 
+        let currentSort = this.state.currentSort;
+
+        if (currentSort.column !== null) {
+            matchedChildren.sort(function(a, b){
+                let keyA = extractDataFrom(a.props.data, currentSort.column);
+                let keyB = extractDataFrom(b.props.data, currentSort.column);
+                return this.sortByCategory(keyA, keyB, currentSort.column, currentSort.direction)
+            }.bind(this));   
+        }
+        
         return matchedChildren;
     }
 
@@ -318,35 +327,39 @@ export class Table extends React.Component {
 
         this.data.sort(function(a, b){
             let keyA = extractDataFrom(a, currentSort.column);
-            keyA = isUnsafe(keyA) ? keyA.toString() : keyA || '';
             let keyB = extractDataFrom(b, currentSort.column);
-            keyB = isUnsafe(keyB) ? keyB.toString() : keyB || '';
-
-            // Default sort
-            if (
-                typeof(this._sortable[currentSort.column]) === 'undefined' ||
-                    this._sortable[currentSort.column] === 'default'
-            ) {
-
-                // Reverse direction if we're doing a reverse sort
-                if (keyA < keyB) {
-                    return -1 * currentSort.direction;
-                }
-
-                if (keyA > keyB) {
-                    return 1 * currentSort.direction;
-                }
-
-                return 0;
-            } else {
-                // Reverse columns if we're doing a reverse sort
-                if (currentSort.direction === 1) {
-                    return this._sortable[currentSort.column](keyA, keyB);
-                } else {
-                    return this._sortable[currentSort.column](keyB, keyA);
-                }
-            }
+            return this.sortByCategory(keyA, keyB, currentSort.column, currentSort.direction)
         }.bind(this));
+    }
+
+    sortByCategory (a, b, category, direction = 1) {
+        a = isUnsafe(a) ? a.toString() : a || '';
+        b = isUnsafe(b) ? b.toString() : b || '';
+
+        // Default sort
+        if (
+            typeof(this._sortable[category]) === 'undefined' ||
+                this._sortable[category] === 'default'
+        ) {
+
+            // Reverse direction if we're doing a reverse sort
+            if (a < b) {
+                return -1 * direction;
+            }
+
+            if (a > b) {
+                return 1 * direction;
+            }
+
+            return 0;
+        } else {
+            // Reverse columns if we're doing a reverse sort
+            if (direction === 1) {
+                return this._sortable[category](a, b);
+            } else {
+                return this._sortable[category](b, a);
+            }
+        }
     }
 
     onSort(column) {

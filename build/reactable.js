@@ -1023,7 +1023,7 @@ window.ReactDOM["default"] = window.ReactDOM;
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-    var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+    var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
     function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -1331,7 +1331,6 @@ window.ReactDOM["default"] = window.ReactDOM;
                                     }
                                 } else {
                                     // Apply custom filter
-                                    console.log('filterColumn', filterColumn, 'filter', currentFilter);
                                     if (_this._filterable[filterColumn]((0, _libExtract_data_from.extractDataFrom)(data, filterColumn).toString(), currentFilter)) {
                                         matchedChildren.push(children[i]);
                                         break;
@@ -1341,6 +1340,16 @@ window.ReactDOM["default"] = window.ReactDOM;
                         }
                     }
                 });
+
+                var currentSort = this.state.currentSort;
+
+                if (currentSort.column !== null) {
+                    matchedChildren.sort((function (a, b) {
+                        var keyA = (0, _libExtract_data_from.extractDataFrom)(a.props.data, currentSort.column);
+                        var keyB = (0, _libExtract_data_from.extractDataFrom)(b.props.data, currentSort.column);
+                        return this.sortByCategory(keyA, keyB, currentSort.column, currentSort.direction);
+                    }).bind(this));
+                }
 
                 return matchedChildren;
             }
@@ -1357,32 +1366,39 @@ window.ReactDOM["default"] = window.ReactDOM;
 
                 this.data.sort((function (a, b) {
                     var keyA = (0, _libExtract_data_from.extractDataFrom)(a, currentSort.column);
-                    keyA = (0, _unsafe.isUnsafe)(keyA) ? keyA.toString() : keyA || '';
                     var keyB = (0, _libExtract_data_from.extractDataFrom)(b, currentSort.column);
-                    keyB = (0, _unsafe.isUnsafe)(keyB) ? keyB.toString() : keyB || '';
-
-                    // Default sort
-                    if (typeof this._sortable[currentSort.column] === 'undefined' || this._sortable[currentSort.column] === 'default') {
-
-                        // Reverse direction if we're doing a reverse sort
-                        if (keyA < keyB) {
-                            return -1 * currentSort.direction;
-                        }
-
-                        if (keyA > keyB) {
-                            return 1 * currentSort.direction;
-                        }
-
-                        return 0;
-                    } else {
-                        // Reverse columns if we're doing a reverse sort
-                        if (currentSort.direction === 1) {
-                            return this._sortable[currentSort.column](keyA, keyB);
-                        } else {
-                            return this._sortable[currentSort.column](keyB, keyA);
-                        }
-                    }
+                    return this.sortByCategory(keyA, keyB, currentSort.column, currentSort.direction);
                 }).bind(this));
+            }
+        }, {
+            key: 'sortByCategory',
+            value: function sortByCategory(a, b, category) {
+                var direction = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+
+                a = (0, _unsafe.isUnsafe)(a) ? a.toString() : a || '';
+                b = (0, _unsafe.isUnsafe)(b) ? b.toString() : b || '';
+
+                // Default sort
+                if (typeof this._sortable[category] === 'undefined' || this._sortable[category] === 'default') {
+
+                    // Reverse direction if we're doing a reverse sort
+                    if (a < b) {
+                        return -1 * direction;
+                    }
+
+                    if (a > b) {
+                        return 1 * direction;
+                    }
+
+                    return 0;
+                } else {
+                    // Reverse columns if we're doing a reverse sort
+                    if (direction === 1) {
+                        return this._sortable[category](a, b);
+                    } else {
+                        return this._sortable[category](b, a);
+                    }
+                }
             }
         }, {
             key: 'onSort',

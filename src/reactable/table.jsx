@@ -34,6 +34,10 @@ export class Table extends React.Component {
         this.setState({ filter: filter });
     }
 
+    sortBy(sort) {
+        this.updateCurrentSort(sort, true)
+    }
+
     // Translate a user defined column array to hold column objects if strings are specified
     // (e.g. ['column1'] => [{key: 'column1', label: 'column1'}])
     translateColumnsArray(columns) {
@@ -242,10 +246,11 @@ export class Table extends React.Component {
         };
     }
 
-    updateCurrentSort(sortBy) {
-        if (sortBy !== false &&
-            sortBy.column !== this.state.currentSort.column &&
-                sortBy.direction !== this.state.currentSort.direction) {
+    updateCurrentSort(sortBy, forceSort) {
+        if ((sortBy !== false && 
+                sortBy.column !== this.state.currentSort.column &&
+                    sortBy.direction !== this.state.currentSort.direction)
+                        || forceSort) {
 
             this.setState({ currentSort: this.getCurrentSort(sortBy) });
         }

@@ -1,6 +1,6 @@
 {
   "name": "reactable-cacheable",
-  "version": "0.5.3",
+  "version": "0.5.6",
   "description": "A fork of Glittershark's reactable.js that allows caching of table data for faster sorting and filtering.",
   "main": "./lib/reactable.js",
   "repository": {

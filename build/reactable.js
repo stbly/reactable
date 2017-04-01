@@ -1060,6 +1060,11 @@ window.ReactDOM["default"] = window.ReactDOM;
             value: function filterBy(filter) {
                 this.setState({ filter: filter });
             }
+        }, {
+            key: 'sortBy',
+            value: function sortBy(sort) {
+                this.updateCurrentSort(sort, true);
+            }
 
             // Translate a user defined column array to hold column objects if strings are specified
             // (e.g. ['column1'] => [{key: 'column1', label: 'column1'}])
@@ -1276,8 +1281,8 @@ window.ReactDOM["default"] = window.ReactDOM;
             }
         }, {
             key: 'updateCurrentSort',
-            value: function updateCurrentSort(sortBy) {
-                if (sortBy !== false && sortBy.column !== this.state.currentSort.column && sortBy.direction !== this.state.currentSort.direction) {
+            value: function updateCurrentSort(sortBy, forceSort) {
+                if (sortBy !== false && sortBy.column !== this.state.currentSort.column && sortBy.direction !== this.state.currentSort.direction || forceSort) {
 
                     this.setState({ currentSort: this.getCurrentSort(sortBy) });
                 }
